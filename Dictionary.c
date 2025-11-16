@@ -33,7 +33,7 @@ typedef struct DictionaryObj {
     size_t dataSize; // data size
     uint64_t dataNext; // data next index
     double dataDensity; // data density
-} DictionaryObj;
+} DictionaryObj;c
 
 // Constants for table array (sparse, indices to data array)
 const size_t TableInitialSize = 8;
