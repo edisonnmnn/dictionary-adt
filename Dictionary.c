@@ -10,7 +10,7 @@
 #include <assert.h>
 #include <stdbool.h>
 #include <math.h>
-#include "Dictionary.c"
+#include "Dictionary.h"
 
 // private structs, functions, and constants -----------------------------------
 
@@ -33,7 +33,7 @@ typedef struct DictionaryObj {
     size_t dataSize; // data size
     uint64_t dataNext; // data next index
     double dataDensity; // data density
-} DictionaryObj;c
+} DictionaryObj;
 
 // Constants for table array (sparse, indices to data array)
 const size_t TableInitialSize = 8;
@@ -112,11 +112,41 @@ void compactData(Dictionary D);
 Dictionary newDictionary(void) {
     Dictionary D; 
     D = malloc(sizeof(DictionaryObj));
+    assert(D != NULL);
+
+    D->tbl = calloc(TableInitialSize, sizeof(int64_t));
+    assert(D->tbl != NULL);
+
+    D->data = calloc(DataInitialSize, sizeof(Element));
+    assert(D->data != NULL);
+
+    D->data[0].key = DataEmpty;
+    D->data[0].val = 0;
+    D->data[0].code = 0;
+
+    D->tblSize = TableInitialSize;
+    D->tblLoadFactor = TableEmpty;
+    D->numPairs = TableEmpty;
+    D->numDelElem = TableEmpty;
+    D->dataSize = DataInitialSize;
+    D->dataNext = 1;
+    D->dataDensity = 1.0;
+
+    return D;
+
 }
 
 // freeDictionary()
 // Frees heap memory associated with *pD, and sets *pD to NULL.
-void freeDictionary(Dictionary* pD);
+void freeDictionary(Dictionary* pD) {
+    if (pD != NULL && *pD != NULL) {
+        Dictionary D = *pD;
+        free(D->tbl);
+        free(D->data);
+        free(*pD);
+        *pD = NULL;
+    }
+}
 
 // Access functions -----------------------------------------------------------
 // size()
